@@ -6,6 +6,7 @@ This module provides a collection of short, convenient aliases for common Git co
 
 
 | Alias | Full Command | Description |
+| ----- | ------------ | ----------- |
 | gs | git status | Show the working tree status. |
 | gss | git status -s | Show a brief, short-format status. |
 | glog | git log | Show the standard commit log. |
@@ -17,6 +18,7 @@ This module provides a collection of short, convenient aliases for common Git co
 ### Staging & Committing
 
 | Alias | Full Command | Description |
+| ----- | ------------ | ----------- |
 | ga | git add | Stage a file. |
 | gaa | git add --all | Stage all changes. |
 | gc | git commit | Record changes to the repository (opens editor). |
@@ -27,6 +29,7 @@ This module provides a collection of short, convenient aliases for common Git co
 ### Branching & Checkout
 
 | Alias | Full Command | Description |
+| ----- | ------------ | ----------- |
 | gb | git branch | List all local branches. |
 | gba | git branch -a | List all local and remote branches. |
 | gco | git checkout | Switch branches or restore files. |
@@ -35,6 +38,7 @@ This module provides a collection of short, convenient aliases for common Git co
 ### Remote Operations
 
 | Alias | Full Command | Description |
+| ----- | ------------ | ----------- |
 | gp | git push | Push commits to a remote repository. |
 | gpf | git push --force-with-lease | A safer way to force push. |
 | gl | git pull | Fetch from and integrate with another repo. |
@@ -45,12 +49,14 @@ This module provides a collection of short, convenient aliases for common Git co
 ### Diffs
 
 | Alias | Full Command | Description |
+| ----- | ------------ | ----------- |
 | gd | git diff | Show changes between commits, commit and working tree, etc. |
 | gds | git diff --staged | Show changes between the index and HEAD (what you've staged). |
 
 ### Stash
 
 | Alias | Full Command | Description |
+| ----- | ------------ | ----------- |
 | gst | git stash | Stash the changes in a dirty working directory. |
 | gstp | git stash pop | Apply stashed changes and remove from stash. |
 | gstl | git stash list | List all stashed changes. ||
