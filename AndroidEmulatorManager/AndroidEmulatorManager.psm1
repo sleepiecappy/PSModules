@@ -14,8 +14,7 @@ param()
 # Private Helper Functions
 #------------------------------------------------------------------------------------------------
 
-function Get-AndroidSdkToolPath
-{
+function Get-AndroidSdkToolPath {
     <#
     .SYNOPSIS
         (Internal) Finds the full path to a specific tool in the Android SDK.
@@ -27,13 +26,11 @@ function Get-AndroidSdkToolPath
     )
 
     $sdkRoot = $env:ANDROID_SDK_ROOT
-    if ([string]::IsNullOrWhiteSpace($sdkRoot))
-    {
+    if ([string]::IsNullOrWhiteSpace($sdkRoot)) {
         $sdkRoot = $env:ANDROID_HOME
     }
 
-    if ([string]::IsNullOrWhiteSpace($sdkRoot))
-    {
+    if ([string]::IsNullOrWhiteSpace($sdkRoot)) {
         Write-Error "Android SDK path not found. Please set the 'ANDROID_SDK_ROOT' or 'ANDROID_HOME' environment variable."
         return $null
     }
@@ -45,10 +42,8 @@ function Get-AndroidSdkToolPath
         (Join-Path -Path $sdkRoot -ChildPath "tools\bin\$ToolName")
     )
 
-    foreach ($path in $possiblePaths)
-    {
-        if (Test-Path $path -PathType Leaf)
-        {
+    foreach ($path in $possiblePaths) {
+        if (Test-Path $path -PathType Leaf) {
             return $path
         }
     }
@@ -72,29 +67,26 @@ function Get-AndroidSdkToolPath
     Start-AndroidEmulator
     # An interactive window will appear to select an emulator.
 #>
-function Start-AndroidEmulator
-{
+function Start-AndroidEmulator {
     [CmdletBinding()]
     param()
 
     $emulatorCli = Get-AndroidSdkToolPath -ToolName "emulator.exe"
-    if ($null -eq $emulatorCli)
-    { return 
+    if ($null -eq $emulatorCli) {
+        return 
     }
 
     Write-Host "Searching for available Android emulators (AVDs)..."
     $avds = & $emulatorCli -list-avds
-    if ($avds.Count -eq 0)
-    {
+    if ($avds.Count -eq 0) {
         Write-Error "No Android Virtual Devices (AVDs) found. Please create one using 'New-AndroidEmulator'."
         return
     }
 
     Write-Host "Please select an emulator to start."
-    $selectedAvd = $avds | Out-GridView -Title "Select an Android Emulator" -PassThru
+    $selectedAvd = $avds | Out-GridView -Title "Select an Android Emulator" -OutputMode Single
 
-    if ($null -eq $selectedAvd)
-    {
+    if ($null -eq $selectedAvd) {
         Write-Host "Operation cancelled. No emulator selected." -ForegroundColor Yellow
         return
     }
@@ -102,12 +94,11 @@ function Start-AndroidEmulator
     $coldBootChoice = Read-Host -Prompt "Start with a cold boot (y/n)? [default: n]"
     $startArgs = @("-avd", $selectedAvd)
 
-    if ($coldBootChoice -eq 'y')
-    {
+    if ($coldBootChoice -eq 'y') {
         Write-Host "Starting emulator '$selectedAvd' with a cold boot..." -ForegroundColor Cyan
         $startArgs += "-no-snapshot-load"
-    } else
-    {
+    }
+    else {
         Write-Host "Starting emulator '$selectedAvd'..." -ForegroundColor Cyan
     }
 
@@ -126,26 +117,24 @@ function Start-AndroidEmulator
     New-AndroidEmulator
     # An interactive process will begin to create a new emulator.
 #>
-function New-AndroidEmulator
-{
+function New-AndroidEmulator {
     [CmdletBinding()]
     param()
 
     $avdManagerCli = Get-AndroidSdkToolPath -ToolName "avdmanager.bat"
-    if ($null -eq $avdManagerCli)
-    { return 
+    if ($null -eq $avdManagerCli) {
+        return 
     }
 
     Write-Host "Fetching available system images..."
     # The `sdkmanager` is used to get a clean list of installed package paths
     $sdkManagerCli = Get-AndroidSdkToolPath -ToolName "sdkmanager.bat"
-    if($null -eq $sdkManagerCli)
-    { return 
+    if ($null -eq $sdkManagerCli) {
+        return 
     }
 
     $installedPackages = & $sdkManagerCli --list_installed | Select-String -Pattern "system-images;"
-    if ($installedPackages.Count -eq 0)
-    {
+    if ($installedPackages.Count -eq 0) {
         Write-Error "No system images found. Please install a system image using the SDK Manager in Android Studio."
         return
     }
@@ -153,17 +142,15 @@ function New-AndroidEmulator
     $systemImages = $installedPackages | ForEach-Object { $_.Line.Split(' ')[0] }
 
     Write-Host "Please select a system image for the new emulator."
-    $selectedImage = $systemImages | Out-GridView -Title "Select a System Image" -PassThru
+    $selectedImage = $systemImages | Out-GridView -Title "Select a System Image" -OutputMode Single
 
-    if ([string]::IsNullOrWhiteSpace($selectedImage))
-    {
+    if ([string]::IsNullOrWhiteSpace($selectedImage)) {
         Write-Host "Operation cancelled. No system image selected." -ForegroundColor Yellow
         return
     }
 
     $avdName = Read-Host -Prompt "Enter a name for the new emulator (e.g., Pixel_6_API_33)"
-    if ([string]::IsNullOrWhiteSpace($avdName))
-    {
+    if ([string]::IsNullOrWhiteSpace($avdName)) {
         Write-Error "AVD name cannot be empty."
         return
     }
@@ -175,11 +162,10 @@ function New-AndroidEmulator
     # Use 'echo "no"' to automatically answer the prompt for creating a custom hardware profile.
     echo "no" | & $avdManagerCli create avd --force --name $avdName --package $selectedImage
 
-    if ($LASTEXITCODE -eq 0)
-    {
+    if ($LASTEXITCODE -eq 0) {
         Write-Host "`n✅ AVD '$avdName' created successfully." -ForegroundColor Green
-    } else
-    {
+    }
+    else {
         Write-Error "Failed to create AVD. Please check the output above for errors."
     }
 }
